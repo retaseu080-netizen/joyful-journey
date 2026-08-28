@@ -228,7 +228,9 @@ function Index() {
               <Label htmlFor="output_format">Formato de Saída (Streaming)</Label>
               <Select
                 value={form.output_format}
-                onValueChange={(value) => setForm({ ...form, output_format: value })}
+                onValueChange={(value) =>
+                  setForm({ ...form, output_format: value as DeviceForm["output_format"] })
+                }
               >
                 <SelectTrigger
                   id="output_format"
