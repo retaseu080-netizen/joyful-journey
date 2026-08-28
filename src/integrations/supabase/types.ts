@@ -173,6 +173,39 @@ export type Database = {
         }
         Relationships: []
       }
+      devices: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          virtual_mac: string
+          xtream_pass: string
+          xtream_url: string
+          xtream_user: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          virtual_mac: string
+          xtream_pass: string
+          xtream_url: string
+          xtream_user: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          virtual_mac?: string
+          xtream_pass?: string
+          xtream_url?: string
+          xtream_user?: string
+        }
+        Relationships: []
+      }
       gastos: {
         Row: {
           cliente_id: string
