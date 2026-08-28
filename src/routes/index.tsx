@@ -12,6 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -52,6 +59,9 @@ const deviceSchema = z.object({
     .max(255),
   xtream_user: z.string().trim().min(1, "Informe o usuário").max(120),
   xtream_pass: z.string().trim().min(1, "Informe a senha").max(120),
+  output_format: z.enum(["ts", "m3u8"], {
+    invalid_type_error: "Selecione um formato de saída válido",
+  }),
 });
 
 type Device = {
@@ -59,11 +69,18 @@ type Device = {
   virtual_mac: string;
   xtream_url: string;
   xtream_user: string;
+  output_format: string;
   is_active: boolean;
   created_at: string;
 };
 
-const emptyForm = { virtual_mac: "", xtream_url: "", xtream_user: "", xtream_pass: "" };
+const emptyForm = {
+  virtual_mac: "",
+  xtream_url: "",
+  xtream_user: "",
+  xtream_pass: "",
+  output_format: "ts" as const,
+};
 
 function Index() {
   const queryClient = useQueryClient();
@@ -74,7 +91,7 @@ function Index() {
     queryFn: async (): Promise<Device[]> => {
       const { data, error } = await supabase
         .from("devices")
-        .select("id, virtual_mac, xtream_url, xtream_user, is_active, created_at")
+        .select("id, virtual_mac, xtream_url, xtream_user, output_format, is_active, created_at")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
@@ -205,6 +222,27 @@ function Index() {
               onChange={(v) => setForm({ ...form, xtream_pass: v })}
             />
 
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="output_format">Formato de Saída (Streaming)</Label>
+              <Select
+                value={form.output_format}
+                onValueChange={(value) =>
+                  setForm({ ...form, output_format: value as "ts" | "m3u8" })
+                }
+              >
+                <SelectTrigger
+                  id="output_format"
+                  className="w-full rounded-xl bg-background/40 sm:w-[320px]"
+                >
+                  <SelectValue placeholder="Selecione o formato" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ts">MPEG-TS (.ts) - Padrão</SelectItem>
+                  <SelectItem value="m3u8">HLS (.m3u8) - Otimizado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="sm:col-span-2">
               <Button
                 type="submit"
@@ -228,6 +266,7 @@ function Index() {
                 <TableRow className="hover:bg-transparent">
                   <TableHead>MAC</TableHead>
                   <TableHead>URL</TableHead>
+                  <TableHead>Formato</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -235,14 +274,14 @@ function Index() {
               <TableBody>
                 {isLoading && (
                   <TableRow>
-                    <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
                       Carregando...
                     </TableCell>
                   </TableRow>
                 )}
                 {!isLoading && devices.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
                       Nenhum dispositivo cadastrado ainda.
                     </TableCell>
                   </TableRow>
@@ -254,6 +293,11 @@ function Index() {
                     </TableCell>
                     <TableCell className="max-w-[240px] truncate text-sm text-muted-foreground">
                       {device.xtream_url}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
+                        {device.output_format === "m3u8" ? "HLS" : "TS"}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       {device.is_active ? (
