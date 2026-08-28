@@ -74,17 +74,19 @@ type Device = {
   created_at: string;
 };
 
-const emptyForm = {
+type DeviceForm = z.infer<typeof deviceSchema>;
+
+const emptyForm: DeviceForm = {
   virtual_mac: "",
   xtream_url: "",
   xtream_user: "",
   xtream_pass: "",
-  output_format: "ts" as const,
+  output_format: "ts",
 };
 
 function Index() {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState<DeviceForm>(emptyForm);
 
   const { data: devices = [], isLoading } = useQuery({
     queryKey: ["devices"],
@@ -226,9 +228,7 @@ function Index() {
               <Label htmlFor="output_format">Formato de Saída (Streaming)</Label>
               <Select
                 value={form.output_format}
-                onValueChange={(value) =>
-                  setForm({ ...form, output_format: value as "ts" | "m3u8" })
-                }
+                onValueChange={(value) => setForm({ ...form, output_format: value })}
               >
                 <SelectTrigger
                   id="output_format"
