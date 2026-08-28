@@ -178,6 +178,7 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          output_format: string
           updated_at: string
           virtual_mac: string
           xtream_pass: string
@@ -188,6 +189,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          output_format?: string
           updated_at?: string
           virtual_mac: string
           xtream_pass: string
@@ -198,6 +200,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          output_format?: string
           updated_at?: string
           virtual_mac?: string
           xtream_pass?: string
